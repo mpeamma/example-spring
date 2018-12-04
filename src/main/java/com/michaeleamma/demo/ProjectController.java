@@ -26,18 +26,22 @@ public class ProjectController {
     @GetMapping("/project")
     public HttpEntity<ArrayList<Resource<Project>>> project(@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
 
-        ArrayList<Project> projects = new ArrayList<>();
+        //ArrayList<Project> projects = new ArrayList<>();
         //repo.findAll().forEach(projects::add);
         ArrayList<Resource<Project>> projectResources = new ArrayList<>();
-        repo.findAll().forEach(p -> projectResources.add(new Resource<>(p)));
-        //projectResource.add(linkTo(methodOn(ProjectController.class).project(name)).withSelfRel());
+        repo.findAll().forEach(p -> {
+            Resource<Project> resource = new Resource<>(p);
+            resource.add(linkTo(methodOn(ProjectController.class).project(name)).withSelfRel());
+            resource.add(linkTo(methodOn(ProjectController.class).postProject(p)).withRel("post"));
+            projectResources.add(resource);
+        });
 
         return new ResponseEntity<>(projectResources, HttpStatus.OK);
     }
 
     @PostMapping("/project")
-    public HttpEntity<Project> postProject() {
-        Project project = new Project("This is a test project");
+    public HttpEntity<Project> postProject(@RequestBody Project project) {
+        //Project project = new Project("This is a test project");
         Project saved = repo.save(project);
         return new ResponseEntity<>(saved, HttpStatus.OK);
     }
