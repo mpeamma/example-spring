@@ -41,4 +41,7 @@ jobs:
       # run tests!
       - run: gradle test
 
-      - build: gradle build
+      - run: gradle build
+
+      - store_artifacts:
+          path: ~./build/libs
