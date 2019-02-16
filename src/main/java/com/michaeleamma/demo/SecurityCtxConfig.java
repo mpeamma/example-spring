@@ -12,10 +12,10 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 public class SecurityCtxConfig extends WebSecurityConfigurerAdapter {
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring()
-                .antMatchers(HttpMethod.POST,
-                        "/project");
+                .antMatchers(HttpMethod.GET,"/project")
+                .antMatchers(HttpMethod.POST,"/project");
     }
 }
 
