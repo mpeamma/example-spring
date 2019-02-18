@@ -73,6 +73,8 @@ jobs:
           paths:
             - ~/caches/app.tar
 
+      - run: ls /tmp/workspace
+
       - run:
           name: Load Docker image layer cache
           command: |
