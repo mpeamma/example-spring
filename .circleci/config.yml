@@ -2,34 +2,30 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  docker-publisher:
+    environment:
+      IMAGE_NAME: meamma/example-spring
     docker:
-      # specify the version you desire here
       - image: circleci/openjdk:8-jdk
       - image: docker:17.05.0-ce-git
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+jobs:
+  build:
+    executor: docker-publisher
 
     working_directory: ~/repo
 
     environment:
-      # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
 
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
       - run: gradle dependencies
@@ -44,8 +40,20 @@ jobs:
 
       - run: gradle build
 
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ~/repo/build/libs/demo-0.0.1-SNAPSHOT.jar
+
       - store_artifacts:
           path: ~/repo/build/libs
+
+  build-docker:
+    executor: docker-publisher
+
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
 
       - setup_remote_docker
 
@@ -73,13 +81,13 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            docker build --cache-from=app -t meamma/example-spring .
+            docker build --cache-from=app -t $IMAGE_NAME .
 
       - run:
           name: Save Docker image layer cache
           command: |
             mkdir -p ~/caches
-            docker save -o ~/caches/app.tar meamma/example-spring
+            docker save -o ~/caches/app.tar $IMAGE_NAME
 
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
