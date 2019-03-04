@@ -103,10 +103,14 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - circleci
       - build-docker:
           requires:
             - build
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - circleci
