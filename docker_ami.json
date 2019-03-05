@@ -1,0 +1,56 @@
+{
+  "variables": {
+    "us_east_2_ami": "ami-0f65671a86f061fcd",
+    "name": "aws-docker-ce-base",
+    "us_east_2_name": "ubuntu-bionic-docker-ce-base",
+    "ssh_username": "ubuntu"
+  },
+  "builders": [
+    {
+      "name": "{{user `us_east_2_name`}}",
+      "type": "amazon-ebs",
+      "region": "us-east-2",
+      "vpc_id": "",
+      "subnet_id": "",
+      "source_ami": "{{user `us_east_2_ami`}}",
+      "instance_type": "t2.micro",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_timeout": "10m",
+      "ami_name": "{{user `us_east_2_name`}} {{timestamp}}",
+      "ami_description": "{{user `us_east_2_name`}} AMI",
+      "run_tags": {
+        "ami-create": "{{user `us_east_2_name`}}"
+      },
+      "tags": {
+        "ami": "{{user `us_east_2_name`}}"
+      },
+      "associate_public_ip_address": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "bootstrap.sh",
+      "destination": "/tmp/bootstrap_docker_ce.sh"
+    },
+    {
+      "type": "file",
+      "source": "cleanup.sh",
+      "destination": "/tmp/cleanup.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+      "inline": [
+        "whoami",
+        "cd /tmp",
+        "chmod +x bootstrap_docker_ce.sh",
+        "chmod +x cleanup.sh",
+        "ls -alh /tmp",
+        "./bootstrap_docker_ce.sh",
+        "sleep 10",
+        "./cleanup.sh"
+      ]
+    }
+  ]
+}
