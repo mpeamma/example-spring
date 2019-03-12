@@ -14,7 +14,7 @@ pipeline {
             steps {
                 withEnv(["PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin"]) {
                     script {
-                        docker.withRegistry('746135561014.dkr.ecr.us-east-2.amazonaws.com/example-spring', 'ecr:us-east-2:aws-personal') {
+                        docker.withRegistry('https://746135561014.dkr.ecr.us-east-2.amazonaws.com/example-spring', 'ecr:us-east-2:aws-personal') {
                             def promptsImage = docker.build("scout-services-prompts", "./scout-services-prompts")
                             promptsImage.push()
                         }
