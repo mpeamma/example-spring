@@ -20,7 +20,7 @@ pipeline {
                         sh 'rm ~/.docker/config.json || true'
 
                         docker.withRegistry('https://746135561014.dkr.ecr.us-east-2.amazonaws.com/example-spring', 'ecr:us-east-2:aws-personal') {
-                            def promptsImage = docker.build("scout-services-prompts", "./scout-services-prompts")
+                            def promptsImage = docker.build("example-spring")
                             promptsImage.push()
                         }
                     }
