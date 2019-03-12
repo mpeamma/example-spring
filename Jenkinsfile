@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 withEnv(['PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin']) {
-                    sh 'gradlew build'
+                    sh './gradlew build'
                     archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
                 }
             }
