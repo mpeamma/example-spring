@@ -11,6 +11,9 @@ pipeline {
             }
         }
         stage('Build Docker Image') {
+            when {
+                branch 'master'
+            }
             steps {
                 withEnv(["PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin"]) {
                     script {
